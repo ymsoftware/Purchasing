@@ -74,23 +74,15 @@ namespace YM.Purchasing.Requisitions
 
         EntityAction<Requisition>[] AuthorizedActions(string userId)
         {
-            var authorized = new List<EntityAction<Requisition>>();
-
-            EntityAction<Requisition>[] actions = new EntityAction<Requisition>[]
+            var actions = new EntityAction<Requisition>[]
             {
                 new DraftAction(),
                 new CreateAction()
             };
 
-            foreach (var action in actions)
-            {
-                if (action.IsAuthorized(this, userId).IsAuthorized)
-                {
-                    authorized.Add(action);
-                }
-            }            
+            var authorized = actions.Where(e => e.IsAuthorized(this, userId).IsAuthorized).ToArray();
 
-            return authorized.ToArray();
+            return authorized;
         }
 
         public override string ToString()

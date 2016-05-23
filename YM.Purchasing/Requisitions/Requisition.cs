@@ -1,83 +1,61 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using YM.Purchasing.Requisitions.Actions;
 
 namespace YM.Purchasing.Requisitions
 {
     public class Requisition
     {
+        #region Properties
+
         public string Id { get; private set; }
         public string DepartmentId { get; private set; }
         public int Year { get; private set; }
         public RequisitionStatus Status { get; private set; }
         public RequisitionType Type { get; private set; }
-        public string Name { get; private set; }
         public string Title { get; private set; }
 
-        public Requisition(string deptId, int year)
+        #endregion
+
+        #region Property Setters
+
+        public Requisition SetDepartmentId(string deptId)
         {
             if (string.IsNullOrWhiteSpace(deptId))
             {
                 throw new ArgumentException("deptId is missing");
             }
+            DepartmentId = deptId;
+            return this;
+        }
 
+        public Requisition SetYear(int year)
+        {
             if (year < DateTime.Now.Year - 1)
             {
                 throw new ArgumentException("year is invalid");
             }
-
-            DepartmentId = deptId;
             Year = year;
+            return this;
         }
 
-        public Requisition(string name)
+        public Requisition SetStatus(RequisitionStatus status)
         {
-            if (string.IsNullOrWhiteSpace(name))
+            if (status == RequisitionStatus.None)
             {
-                throw new ArgumentException("name is missing");
+                throw new ArgumentException("invalid status");
             }
-
-            var tokens = name.Split('-'); //010020-F-2015
-            if (tokens.Length != 3)
-            {
-                throw new ArgumentException("name is invalid");
-            }
-
-            string deptId = tokens[0];
-            if (string.IsNullOrWhiteSpace(deptId))
-            {
-                throw new ArgumentException("deptId is missing");
-            }
-
-            string type = tokens[1];
-            if (string.IsNullOrWhiteSpace(type))
-            {
-                throw new ArgumentException("type is missing");
-            }
-
-            type = type.ToLower();
-
-            RequisitionType rt = type == "f" ? RequisitionType.Formal : type == "i" ? RequisitionType.Informal : RequisitionType.None;
-            if (rt == RequisitionType.None)
-            {
-                throw new ArgumentException("type is invalid");
-            }
-
-            int year;
-            if (!int.TryParse(tokens[2], out year))
-            {
-                throw new ArgumentException("year is invalid");
-            }
-
-            DepartmentId = deptId;
-            Type = rt;
-            Year = year;
+            Status = status;
+            return this;
         }
 
         public Requisition SetType(RequisitionType type)
         {
+            if (type == RequisitionType.None)
+            {
+                throw new ArgumentException("invalid type");
+            }
             Type = type;
             return this;
         }
@@ -92,11 +70,26 @@ namespace YM.Purchasing.Requisitions
             return this;
         }
 
-        public ExecutionResult Draft(string userId)
-        {
-            Status = RequisitionStatus.Draft;
+        #endregion
 
-            return ExecutionResult.Success();
+        EntityAction<Requisition>[] AuthorizedActions(string userId)
+        {
+            var actions = new List<EntityAction<Requisition>>();
+
+            EntityAction<Requisition> action;
+
+            action = new DraftAction();
+            if (action.IsAuthorized(this, userId).IsAuthorized)
+            {
+                actions.Add(action);
+            }
+
+            return actions.ToArray();
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0}-{1}-{2}", DepartmentId, Type.ToString().First(), Year);
         }
     }
 }

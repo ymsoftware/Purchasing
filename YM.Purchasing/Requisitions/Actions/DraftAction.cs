@@ -27,7 +27,9 @@ namespace YM.Purchasing.Requisitions.Actions
                 return ExecutionResult.Failure(test.Text);
             }
 
-            return entity.Draft(userId);
+            entity.SetStatus(RequisitionStatus.Draft);
+
+            return ExecutionResult.Success();
         }
     }
 }

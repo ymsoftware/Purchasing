@@ -1,14 +1,14 @@
 ﻿
 namespace YM.Purchasing.Requisitions.Actions
 {
-    public class DraftAction : EntityAction<Requisition>
+    public class DraftAction : IEntityAction<IRequisition>
     {
-        public override string Name
+        public string Name
         {
             get { return Constants.DRAFT; }
         }
 
-        public override AuthorizationResponse IsAuthorized(Requisition entity, string userId)
+        public AuthorizationResponse IsAuthorized(IRequisition entity, string userId)
         {
             if (entity.Status == RequisitionStatus.None)
             {
@@ -19,7 +19,7 @@ namespace YM.Purchasing.Requisitions.Actions
             return AuthorizationResponse.NotAuthorized("Invalid status");
         }
 
-        public override ExecutionResult Execute(Requisition entity, string userId)
+        public ExecutionResult Execute(IRequisition entity, string userId)
         {
             var test = IsAuthorized(entity, userId);
             if (!test.IsAuthorized)
@@ -27,9 +27,7 @@ namespace YM.Purchasing.Requisitions.Actions
                 return ExecutionResult.Failure(test.Text);
             }
 
-            entity.SetStatus(RequisitionStatus.Draft);
-
-            return ExecutionResult.Success();
+            return entity.Draft();
         }
     }
 }

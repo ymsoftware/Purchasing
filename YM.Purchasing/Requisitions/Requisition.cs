@@ -1,19 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using YM.Purchasing.Requisitions.Actions;
 
 namespace YM.Purchasing.Requisitions
 {
-    public class Requisition
+    public class Requisition : IRequisition
     {
         #region Properties
 
         public string Id { get; private set; }
         public string DepartmentId { get; private set; }
         public int Year { get; private set; }
+        public int Sequence { get; private set; }
         public RequisitionStatus Status { get; private set; }
-        public RequisitionType Type { get; private set; }
         public string Title { get; private set; }
 
         #endregion
@@ -50,16 +49,6 @@ namespace YM.Purchasing.Requisitions
             return this;
         }
 
-        public Requisition SetType(RequisitionType type)
-        {
-            if (type == RequisitionType.None)
-            {
-                throw new ArgumentException("invalid type");
-            }
-            Type = type;
-            return this;
-        }
-
         public Requisition SetTitle(string title)
         {
             if (string.IsNullOrWhiteSpace(title))
@@ -72,9 +61,9 @@ namespace YM.Purchasing.Requisitions
 
         #endregion
 
-        EntityAction<Requisition>[] AuthorizedActions(string userId)
+        public IEntityAction<IRequisition>[] AuthorizedActions(string userId)
         {
-            var actions = new EntityAction<Requisition>[]
+            var actions = new IEntityAction<IRequisition>[]
             {
                 new DraftAction(),
                 new CreateAction()
@@ -85,9 +74,25 @@ namespace YM.Purchasing.Requisitions
             return authorized;
         }
 
+        #region Actions
+
+        public ExecutionResult Draft()
+        {
+            Status = RequisitionStatus.Draft;
+            return ExecutionResult.Success();
+        }
+
+        public ExecutionResult Create()
+        {
+            Status = RequisitionStatus.Created;
+            return ExecutionResult.Success();
+        }
+
+        #endregion
+
         public override string ToString()
         {
-            return string.Format("{0}-{1}-{2}", DepartmentId, Type.ToString().First(), Year);
+            return string.Format("{0}-{1}-{2}", DepartmentId, Sequence, Year);
         }
     }
 }

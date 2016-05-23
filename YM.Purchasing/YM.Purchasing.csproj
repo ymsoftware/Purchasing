@@ -39,17 +39,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IActionable.cs" />
+    <Compile Include="IEntityAction.cs" />
     <Compile Include="ExecutionResult.cs" />
     <Compile Include="AuthorizationResponse.cs" />
-    <Compile Include="EntityAction.cs" />
     <Compile Include="ExecutionStatus.cs" />
+    <Compile Include="IRepository.cs" />
+    <Compile Include="IRequisition.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Requisitions\Actions\CreateAction.cs" />
     <Compile Include="Requisitions\Actions\DraftAction.cs" />
     <Compile Include="Requisitions\Constants.cs" />
     <Compile Include="Requisitions\Requisition.cs" />
-    <Compile Include="Requisitions\RequisitionType.cs" />
-    <Compile Include="Requisitions\RequisitionStatus.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

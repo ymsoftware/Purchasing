@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\GroupCollection.cs" />
     <Compile Include="IActionable.cs" />
     <Compile Include="IEntityAction.cs" />
     <Compile Include="ExecutionResult.cs" />
